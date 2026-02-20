@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramadan Kareem 2026</title>
+    <style>
+        :root {
+            --bg-color: #041c1c;
+            --gradient: linear-gradient(135deg, #0c3b3b 0%, #072a2a 60%, #041c1c 100%);
+            --gold: #facc15;
+            --text-light: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--gradient);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .header { font-size: 28px; margin-bottom: 5px; }
+        .title { color: var(--gold); font-weight: bold; font-size: 22px; margin-bottom: 5px; }
+        .stars { color: #fde68a; font-size: 12px; margin-bottom: 15px; }
+
+        .countdown-box {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(250, 204, 21, 0.2);
+        }
+        #timer { font-size: 32px; font-weight: bold; margin-top: 5px; letter-spacing: 2px; font-family: monospace; }
+
+        /* Prayer Times Styling */
+        .prayer-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 12px;
+        }
+        .prayer-item {
+            flex: 1;
+            font-size: 10px;
+            color: #9ca3af;
+            transition: 0.4s;
+            opacity: 0.5;
+        }
+        .prayer-item.active {
+            opacity: 1;
+            color: var(--gold);
+            transform: scale(1.1);
+            text-shadow: 0 0 10px var(--gold);
+        }
+        .prayer-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+        .prayer-time { font-weight: bold; display: block; }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .day-box {
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            background: rgba(255,255,255,0.05);
+        }
+        .current-day { background: var(--gold) !important; color: #000; box-shadow: 0 0 10px var(--gold); }
+        .past-day { color: #4b5563; }
+
+        .phase-text { color: var(--gold); font-weight: bold; font-size: 18px; margin: 10px 0; }
+        .times { font-size: 16px; margin: 5px 0; background: rgba(255,255,255,0.05); padding: 5px; border-radius: 5px; }
+        .jummah { color: #ffd700; font-weight: bold; margin-top: 10px; display: none; }
+        .location { font-size: 11px; color: #9ca3af; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">🌙✨📿</div>
+    <div class="title">RAMADAN KAREEM 2026</div>
+    <div class="stars">✦  ✧   ✦   ✧  ✦</div>
+
+    <div class="countdown-box">
+        <div id="status-text" style="font-size: 14px; opacity: 0.9;">লোড হচ্ছে...</div>
+        <div id="timer">00:00:00</div>
+    </div>
+
+    <div class="prayer-container">
+        <div class="prayer-item" id="p-fajar">
+            <span class="prayer-icon">🌅</span> ফজর
+            <span class="prayer-time" id="t-fajar">--:--</span>
+        </div>
+        <div class="prayer-item" id="p-johor">
+            <span class="prayer-icon">☀️</span> যোহর
+            <span class="prayer-time" id="t-johor">--:--</span>
+        </div>
+        <div class="prayer-item" id="p-asr">
+            <span class="prayer-icon">⛅</span> আসর
+            <span class="prayer-time" id="t-asr">--:--</span>
+        </div>
+        <div class="prayer-item" id="p-maghrib">
+            <span class="prayer-icon">🌇</span> মাগরিব
+            <span class="prayer-time" id="t-maghrib">--:--</span>
+        </div>
+        <div class="prayer-item" id="p-isha">
+            <span class="prayer-icon">🌙</span> এশা
+            <span class="prayer-time" id="t-isha">--:--</span>
+        </div>
+    </div>
+
+    <div class="phase-text" id="phase"></div>
+    <div class="calendar-grid" id="calendar"></div>
+
+    <div class="times" id="sehri-time"></div>
+    <div class="times" id="iftar-time"></div>
+
+    <div id="jummah-msg" class="jummah">✨ JUMMAH MUBARAK ✨</div>
+    
+    <div id="current-date" style="font-size: 12px; margin-top: 10px; color: #d1d5db;"></div>
+    <div class="location">📍 Dhaka • Kishoreganj • Bhairab</div>
+</div>
+
+<script>
+    const sehriTimes = ["05:10 AM","05:09 AM","05:09 AM","05:08 AM","05:07 AM","05:06 AM","05:06 AM","05:05 AM","05:04 AM","05:03 AM","05:02 AM","05:01 AM","05:00 AM","04:59 AM","04:58 AM","04:57 AM","04:56 AM","04:55 AM","04:54 AM","04:53 AM","04:52 AM","04:51 AM","04:50 AM","04:49 AM","04:48 AM","04:47 AM","04:46 AM","04:45 AM","04:44 AM","04:43 AM"];
+    const iftarTimes = ["05:54 PM","05:55 PM","05:56 PM","05:57 PM","05:58 PM","05:59 PM","06:00 PM","06:01 PM","06:02 PM","06:03 PM","06:04 PM","06:05 PM","06:06 PM","06:07 PM","06:08 PM","06:09 PM","06:10 PM","06:11 PM","06:12 PM","06:13 PM","06:14 PM","06:15 PM","06:16 PM","06:17 PM","06:18 PM","06:19 PM","06:20 PM","06:21 PM","06:22 PM","06:23 PM"];
+    
+    // ৫ ওয়াক্ত আজানের ডাটা
+    const prayerData = {
+        fajar: sehriTimes,
+        johor: Array(30).fill("12:11 PM"),
+        asr: ["4:17 PM","4:18 PM","4:19 PM","4:20 PM","4:21 PM","4:22 PM","4:23 PM","4:24 PM","4:25 PM","4:26 PM","4:27 PM","4:28 PM","4:29 PM","4:30 PM","4:31 PM","4:32 PM","4:33 PM","4:34 PM","4:35 PM","4:36 PM","4:37 PM","4:38 PM","4:39 PM","4:40 PM","4:41 PM","4:42 PM","4:43 PM","4:44 PM","4:45 PM","4:46 PM"],
+        maghrib: iftarTimes,
+        isha: ["7:10 PM","7:11 PM","7:12 PM","7:12 PM","7:13 PM","7:14 PM","7:15 PM","7:16 PM","7:17 PM","7:18 PM","7:19 PM","7:20 PM","7:21 PM","7:22 PM","7:23 PM","7:24 PM","7:25 PM","7:26 PM","7:27 PM","7:28 PM","7:29 PM","7:30 PM","7:31 PM","7:32 PM","7:33 PM","7:34 PM","7:35 PM","7:36 PM","7:37 PM","7:38 PM"]
+    };
+
+    function parseTime(timeStr, baseDate) {
+        let [time, period] = timeStr.split(" ");
+        let [hour, min] = time.split(":").map(Number);
+        if (period === "PM" && hour !== 12) hour += 12;
+        if (period === "AM" && hour === 12) hour = 0;
+        let d = new Date(baseDate);
+        d.setHours(hour, min, 0, 0);
+        return d;
+    }
+
+    function updateApp() {
+        const now = new Date();
+        const ramadanStart = new Date("2026-02-19T00:00:00");
+        let diffTime = now - ramadanStart;
+        let ramadanDay = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        let currentIdx = Math.max(0, Math.min(ramadanDay - 1, 29));
+        
+        let sehriToday = parseTime(sehriTimes[currentIdx], now);
+        let iftarToday = parseTime(iftarTimes[currentIdx], now);
+        let targetDate, status, displayDay = ramadanDay;
+
+        // ৫ ওয়াক্ত নামাজের সময় বের করা এবং Glow লজিক
+        const prayers = ['fajar', 'johor', 'asr', 'maghrib', 'isha'];
+        let activePrayer = "";
+
+        prayers.forEach((p, idx) => {
+            let pTimeStr = prayerData[p][currentIdx];
+            let pDate = parseTime(pTimeStr, now);
+            document.getElementById(`t-${p}`).innerText = pTimeStr;
+            
+            // Glow লজিক: বর্তমান সময়ের চেয়ে নামাজের সময় বেশি হলে সেটিই পরবর্তী বা বর্তমান নামাজ
+            if (!activePrayer && now < pDate) {
+                activePrayer = p;
+                document.getElementById(`p-${p}`).classList.add('active');
+            } else {
+                document.getElementById(`p-${p}`).classList.remove('active');
+            }
+        });
+        // যদি এশার পর হয় তবে ফজর এক্টিভ দেখাবে (পরবর্তী দিনের জন্য)
+        if(!activePrayer) document.getElementById('p-fajar').classList.add('active');
+
+        // ইফতার লজিক
+        if (now > iftarToday) {
+            status = "⏳ আগামী সেহরির বাকি:";
+            displayDay = ramadanDay + 1; 
+            let nextIdx = Math.min(currentIdx + 1, 29);
+            let tomorrow = new Date();
+            tomorrow.setDate(now.getDate() + 1);
+            targetDate = parseTime(sehriTimes[nextIdx], tomorrow);
+        } else if (now < sehriToday) {
+            status = "⏳ সেহরির বাকি:";
+            targetDate = sehriToday;
+        } else {
+            status = "⏳ ইফতারের বাকি:";
+            targetDate = iftarToday;
+        }
+
+        // Phase & Calendar
+        let phaseTxt = "প্রস্তুতি চলছে...";
+        if (displayDay >= 1 && displayDay <= 10) phaseTxt = "🌿 Rahmat Phase";
+        else if (displayDay >= 11 && displayDay <= 20) phaseTxt = "🌙 Magfirat Phase";
+        else if (displayDay >= 21 && displayDay <= 30) phaseTxt = "⭐ Najat Phase";
+        document.getElementById('phase').innerText = phaseTxt;
+
+        let calHtml = "";
+        for (let i = 1; i <= 30; i++) {
+            let className = "day-box";
+            if (i === displayDay) className += " current-day";
+            else if (i < displayDay) className += " past-day";
+            calHtml += `<div class="${className}">${String(i).padStart(2, '0')}</div>`;
+        }
+        document.getElementById('calendar').innerHTML = calHtml;
+
+        // UI Updates
+        document.getElementById('status-text').innerText = status;
+        document.getElementById('sehri-time').innerText = "🌙 সেহরি: " + sehriTimes[currentIdx];
+        document.getElementById('iftar-time').innerText = "🕌 ইফতার: " + iftarTimes[currentIdx];
+        document.getElementById('current-date').innerText = now.toDateString();
+        document.getElementById('jummah-msg').style.display = (now.getDay() === 5) ? "block" : "none";
+
+        let tDiff = targetDate - now;
+        if (tDiff < 0) tDiff = 0;
+        let h = Math.floor(tDiff / 3600000);
+        let m = Math.floor((tDiff % 3600000) / 60000);
+        let s = Math.floor((tDiff % 60000) / 1000);
+        document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    }
+
+    setInterval(updateApp, 1000);
+    updateApp();
+</script>
+
+</body>
+</html>
