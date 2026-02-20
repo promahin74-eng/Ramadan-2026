@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#00a651">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ramadan Kareem 2026</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Ramadan 2026">
+    
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/promahin74-eng/Ramadan-2026/main/97D4D657-DD5A-44C6-A585-62F0721C6425.png">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/promahin74-eng/Ramadan-2026/main/97D4D657-DD5A-44C6-A585-62F0721C6425.png">
+
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Ramadan Kareem 2026","short_name":"Ramadan","start_url":".","display":"standalone","background_color":"#041c1c","theme_color":"#facc15","icons":[{"src":"https://raw.githubusercontent.com/promahin74-eng/Ramadan-2026/main/97D4D657-DD5A-44C6-A585-62F0721C6425.png","sizes":"512x512","type":"image/png"}]}'>
+
     <style>
         :root {
             --bg-color: #041c1c;
@@ -50,7 +58,6 @@
         }
         #timer { font-size: 32px; font-weight: bold; margin-top: 5px; letter-spacing: 2px; font-family: monospace; }
 
-        /* Prayer Times Styling */
         .prayer-container {
             display: flex;
             justify-content: space-between;
@@ -151,7 +158,6 @@
     const sehriTimes = ["05:10 AM","05:09 AM","05:09 AM","05:08 AM","05:07 AM","05:06 AM","05:06 AM","05:05 AM","05:04 AM","05:03 AM","05:02 AM","05:01 AM","05:00 AM","04:59 AM","04:58 AM","04:57 AM","04:56 AM","04:55 AM","04:54 AM","04:53 AM","04:52 AM","04:51 AM","04:50 AM","04:49 AM","04:48 AM","04:47 AM","04:46 AM","04:45 AM","04:44 AM","04:43 AM"];
     const iftarTimes = ["05:54 PM","05:55 PM","05:56 PM","05:57 PM","05:58 PM","05:59 PM","06:00 PM","06:01 PM","06:02 PM","06:03 PM","06:04 PM","06:05 PM","06:06 PM","06:07 PM","06:08 PM","06:09 PM","06:10 PM","06:11 PM","06:12 PM","06:13 PM","06:14 PM","06:15 PM","06:16 PM","06:17 PM","06:18 PM","06:19 PM","06:20 PM","06:21 PM","06:22 PM","06:23 PM"];
     
-    // ৫ ওয়াক্ত আজানের ডাটা
     const prayerData = {
         fajar: sehriTimes,
         johor: Array(30).fill("12:11 PM"),
@@ -181,16 +187,14 @@
         let iftarToday = parseTime(iftarTimes[currentIdx], now);
         let targetDate, status, displayDay = ramadanDay;
 
-        // ৫ ওয়াক্ত নামাজের সময় বের করা এবং Glow লজিক
         const prayers = ['fajar', 'johor', 'asr', 'maghrib', 'isha'];
         let activePrayer = "";
 
-        prayers.forEach((p, idx) => {
+        prayers.forEach((p) => {
             let pTimeStr = prayerData[p][currentIdx];
             let pDate = parseTime(pTimeStr, now);
             document.getElementById(`t-${p}`).innerText = pTimeStr;
             
-            // Glow লজিক: বর্তমান সময়ের চেয়ে নামাজের সময় বেশি হলে সেটিই পরবর্তী বা বর্তমান নামাজ
             if (!activePrayer && now < pDate) {
                 activePrayer = p;
                 document.getElementById(`p-${p}`).classList.add('active');
@@ -198,10 +202,8 @@
                 document.getElementById(`p-${p}`).classList.remove('active');
             }
         });
-        // যদি এশার পর হয় তবে ফজর এক্টিভ দেখাবে (পরবর্তী দিনের জন্য)
         if(!activePrayer) document.getElementById('p-fajar').classList.add('active');
 
-        // ইফতার লজিক
         if (now > iftarToday) {
             status = "⏳ আগামী সেহরির বাকি:";
             displayDay = ramadanDay + 1; 
@@ -217,7 +219,6 @@
             targetDate = iftarToday;
         }
 
-        // Phase & Calendar
         let phaseTxt = "প্রস্তুতি চলছে...";
         if (displayDay >= 1 && displayDay <= 10) phaseTxt = "🌿 Rahmat Phase";
         else if (displayDay >= 11 && displayDay <= 20) phaseTxt = "🌙 Magfirat Phase";
@@ -233,7 +234,6 @@
         }
         document.getElementById('calendar').innerHTML = calHtml;
 
-        // UI Updates
         document.getElementById('status-text').innerText = status;
         document.getElementById('sehri-time').innerText = "🌙 সেহরি: " + sehriTimes[currentIdx];
         document.getElementById('iftar-time').innerText = "🕌 ইফতার: " + iftarTimes[currentIdx];
