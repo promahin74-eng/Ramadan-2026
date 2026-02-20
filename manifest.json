@@ -1,0 +1,13 @@
+{
+  "name": "Mahin App",
+  "short_name": "Mahin",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00a651",
+  "icons": [
+    {
+      "src": "https://github.com/<username>/<repo>/raw/main/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
