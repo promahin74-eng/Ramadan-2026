@@ -3,8 +3,7 @@ const urlsToCache = [
     './',
     './index.html',
     './manifest.json',
-    './icon-192.jpg',
-    'https://www.islamcan.com/audio/adhan/azan1.mp3'
+    './icon-192.jpg'
 ];
 
 // Service Worker ইন্সটল এবং ফাইল ক্যাশ করা
