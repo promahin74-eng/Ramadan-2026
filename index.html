@@ -1,1 +1,533 @@
-m
+<html lang="bn"><head>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#041c1c">
+<link rel="apple-touch-icon" href="icon-192.jpg">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramadan Kareem 2026 - Mahin</title>
+    <style>
+        :root {
+            --bg-color: #041c1c;
+            --gradient: linear-gradient(135deg, #0c3b3b 0%, #072a2a 60%, #041c1c 100%);
+            --gold: #facc15;
+            --text-light: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            box-sizing: border-box;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .active-page { display: flex; }
+
+        .container {
+            background: var(--gradient);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .header { font-size: 28px; margin-bottom: 5px; }
+        .title { color: var(--gold); font-weight: bold; font-size: 22px; margin-bottom: 5px; }
+        .stars { color: #fde68a; font-size: 12px; margin-bottom: 15px; }
+
+        .countdown-box {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            transition: 0.3s;
+        }
+        @keyframes blink {
+            0% { border-color: #ff4d4d; box-shadow: 0 0 5px #ff4d4d; }
+            50% { border-color: transparent; box-shadow: none; color: #ff4d4d; }
+            100% { border-color: #ff4d4d; box-shadow: 0 0 5px #ff4d4d; }
+        }
+        .warning-blink { animation: blink 0.8s infinite; }
+        #timer { font-size: 32px; font-weight: bold; margin-top: 5px; letter-spacing: 2px; font-family: monospace; }
+
+        .action-buttons { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; }
+        .btn {
+            flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--gold);
+            background: rgba(250, 204, 21, 0.1); color: var(--gold);
+            font-weight: bold; cursor: pointer; text-align: center; font-size: 16px;
+        }
+        .btn:active { background: var(--gold); color: #000; }
+
+        .prayer-container {
+            display: flex; justify-content: space-between; margin-bottom: 10px;
+            background: rgba(0,0,0,0.2); padding: 15px 5px; border-radius: 12px; width: 100%; box-sizing: border-box;
+        }
+        
+        .prayer-item { 
+            flex: 1; 
+            font-size: 10px; 
+            color: #9ca3af; 
+            opacity: 0.4; 
+            transition: all 0.4s ease-in-out; 
+        }
+        .prayer-item.active { 
+            opacity: 1; 
+            color: var(--gold); 
+            transform: scale(1.2); 
+            font-weight: bold;
+            text-shadow: 0 0 10px var(--gold), 0 0 20px rgba(250, 204, 21, 0.8); 
+        }
+        .prayer-icon { font-size: 18px; display: block; margin-bottom: 4px; }
+
+        /* New Prayer Progress Line CSS */
+        .prayer-progress-container {
+            width: 100%;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            border-radius: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #next-prayer-text {
+            font-size: 13px;
+            color: #fde68a;
+            margin-bottom: 8px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--gold);
+            box-shadow: 0 0 8px var(--gold);
+            transition: width 1s linear;
+        }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 20px; width: 100%; }
+        .day-box { 
+            height: 35px; display: flex; align-items: center; justify-content: center; 
+            border-radius: 8px; font-size: 14px; background: rgba(255,255,255,0.05); 
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            box-shadow: 0 0 8px rgba(250, 204, 21, 0.1);
+            transition: all 0.3s ease;
+        }
+        .current-day { 
+            background: var(--gold) !important; 
+            color: #000; font-weight: bold; 
+            box-shadow: 0 0 15px var(--gold), 0 0 30px rgba(250, 204, 21, 0.5) !important; 
+            transform: scale(1.1);
+            border: none;
+            z-index: 10;
+        }
+        .past-day { 
+            color: #6b7280; 
+            opacity: 0.3; 
+            box-shadow: none; 
+            border: 1px solid rgba(255,255,255,0.05); 
+        }
+
+        .times { font-size: 16px; margin: 5px 0; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px; width: 100%; box-sizing: border-box; }
+
+        .sub-header { width: 100%; display: flex; align-items: center; margin-bottom: 20px; }
+        .back-icon { font-size: 24px; cursor: pointer; margin-right: 15px; color: var(--gold); }
+        .dua-list { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+        .dua-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(250, 204, 21, 0.2); cursor: pointer; text-align: left; }
+        
+        .dua-detail-box { width: 100%; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px solid var(--gold); box-sizing: border-box; }
+        .arabic { font-size: 24px; color: #fde68a; margin-bottom: 15px; line-height: 1.8; direction: rtl; text-align: right; }
+        .pronunciation { color: var(--gold); margin-bottom: 10px; font-size: 15px; }
+        .meaning { font-size: 14px; color: #d1d5db; line-height: 1.5; }
+
+        #tasbih-page { touch-action: manipulation; user-select: none; }
+        .tasbih-display {
+            width: 220px; height: 220px; border-radius: 50%; border: 8px solid var(--gold);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-size: 50px; font-weight: bold; margin: 40px 0; box-shadow: 0 0 20px rgba(250, 204, 21, 0.3);
+            cursor: pointer; -webkit-tap-highlight-color: transparent;
+        }
+        .reset-btn { background: #ff4d4d; color: white; border: none; padding: 12px 40px; border-radius: 25px; font-weight: bold; cursor: pointer; }
+        
+        .designer-text { font-size: 11px; color: rgba(255, 255, 255, 0.4); margin-top: 25px; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<audio id="azan-audio" src="https://www.islamcan.com/audio/adhan/azan1.mp3"></audio>
+
+<div id="home-page" class="page active-page">
+    <div class="container">
+        <div class="header">🌙✨📿</div>
+        <div class="title">RAMADAN KAREEM 2026</div>
+        <div class="stars">✦  ✧   ✦   ✧  ✦</div>
+
+        <div id="timer-container" class="countdown-box">
+            <div id="status-text" style="font-size: 14px; opacity: 0.9;">⏳ আগামী সেহরির বাকি:</div>
+            <div id="timer">00:00:00</div>
+        </div>
+
+        <div class="action-buttons">
+            <div class="btn" onclick="showPage('dua-list-page')">🤲 দোয়া</div>
+            <div class="btn" onclick="showPage('tasbih-page')">📿 তসবিহ</div>
+        </div>
+
+        <div class="prayer-container">
+            <div class="prayer-item" id="p-fajar"><span class="prayer-icon">🌅</span> ফজর<br><span id="t-fajar">--:--</span></div>
+            <div class="prayer-item" id="p-johor"><span class="prayer-icon">☀️</span> যোহর<br><span id="t-johor">--:--</span></div>
+            <div class="prayer-item" id="p-asr"><span class="prayer-icon">⛅</span> আসর<br><span id="t-asr">--:--</span></div>
+            <div class="prayer-item" id="p-maghrib"><span class="prayer-icon">🌇</span> মাগরিব<br><span id="t-maghrib">--:--</span></div>
+            <div class="prayer-item" id="p-isha"><span class="prayer-icon">🌙</span> এশা<br><span id="t-isha">--:--</span></div>
+        </div>
+
+        <div class="prayer-progress-container">
+            <div id="next-prayer-text">পরবর্তী ওয়াক্ত: --:--</div>
+            <div class="progress-bar-bg">
+                <div id="prayer-progress-fill" class="progress-bar-fill"></div>
+            </div>
+        </div>
+
+        <div class="phase-text" id="phase" style="color:var(--gold); font-weight:bold; margin-bottom:10px;">🌿 রহমতের ১০ দিন</div>
+        <div class="calendar-grid" id="calendar"></div>
+
+        <div class="times" id="sehri-time">🌙 সেহরি শেষ: --:--</div>
+        <div class="times" id="iftar-time">🕌 ইফতার শুরু: --:--</div>
+        <div id="jummah-msg" style="color: rgb(255, 215, 0); font-weight: bold; margin-top: 10px; display: none;">✨ JUMMAH MUBARAK ✨</div>
+        
+        <div id="current-date" style="font-size: 13px; font-weight: bold; margin-top: 15px; color: #d1d5db;">--</div>
+        
+        <div style="font-size: 11px; color: #9ca3af; margin-top: 5px;">📍 Dhaka • Kishoreganj • Bhairab</div>
+
+        <div class="designer-text">Designed by Mahin</div>
+    </div>
+</div>
+
+<div id="dua-list-page" class="page">
+    <div class="sub-header">
+        <span class="back-icon" onclick="showPage('home-page')">←</span>
+        <h2>রমজানের দোয়া</h2>
+    </div>
+    <div class="dua-list" id="dua-list-container"></div>
+</div>
+
+<div id="dua-detail-page" class="page">
+    <div class="sub-header">
+        <span class="back-icon" onclick="showPage('dua-list-page')">←</span>
+        <h3 id="detail-title">দোয়া</h3>
+    </div>
+    <div class="dua-detail-box">
+        <div id="det-arabic" class="arabic"></div>
+        <div id="det-pron" class="pronunciation"></div>
+        <div id="det-meaning" class="meaning"></div>
+    </div>
+</div>
+
+<div id="tasbih-page" class="page">
+    <div class="sub-header">
+        <span class="back-icon" onclick="showPage('home-page')">←</span>
+        <h2>ডিজিটাল তসবিহ</h2>
+    </div>
+    <div class="tasbih-display" onclick="tasbihClick()">
+        <span id="tasbih-count">0</span>
+        <span style="font-size: 14px; font-weight: normal; opacity: 0.6;">TAP</span>
+    </div>
+    <button class="reset-btn" onclick="resetTasbih()">RESET</button>
+</div>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker Registered!'))
+                .catch(err => console.log('Service Worker Registration Failed!', err));
+        });
+    }
+
+    const duaData = [
+        { title: "রোজার নিয়ত (সাহরির পর)", arabic: "نَوَيْتُ اَنْ اَصُوْمَ غَدًا مِّنْ شَهْرِ رَمَضَانَ الْمُبَارَكِ فَرْضًا لَّكَ يَا اللهُ فَتَقَبَّلْ مِنِّيْ اِنَّكَ اَنْتَ السَّمِيْعُ الْعَلِيْمُ", pron: "উচ্চারণ: নাওয়াইতু আন আসূমা গাদাম মিন শাহরি রামাদ্বানাল মুবারাকি ফারদ্বাল্লাকা ইয়া আল্লাহু ফাতাকাব্বাল মিন্নী ইন্নাকা আন্তাস সামীউল আলীম।", meaning: "অর্থ: হে আল্লাহ! আগামীকাল পবিত্র রমজান মাসে তোমার পক্ষ থেকে নির্ধারিত ফরজ রোজা রাখার নিয়ত করলাম। অতএব তুমি আমার পক্ষ থেকে তা কবুল করো।" },
+        { title: "ইফতারের দোয়া", arabic: "اَللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ اَفْطَرْتُ", pron: "উচ্চারণ: আল্লাহুম্মা লাকা সুমতু ওয়া আলা রিযক্বিকা আফতারতু।", meaning: "অর্থ: হে আল্লাহ! আমি তোমারই জন্য রোজা রেখেছি এবং তোমারই দেওয়া রিজিক দিয়ে ইফতার করছি।" },
+        { title: "ইফতারের পরের সুন্নাহ দোয়া", arabic: "ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوْقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللهُ", pron: "উচ্চারণ: যাহাবায যামাউ ওয়াবতাল্লাতিল উরূক্বু ওয়া সাবাতাল আজরু ইনশাআল্লাহ।", meaning: "অর্থ: পিপাসা দূর হলো, শিরা-উপশিরা সিক্ত হলো এবং ইনশাআল্লাহ পুরস্কার বা সওয়াবও নির্ধারিত হলো।" },
+        { title: "লাইলাতুল কদরের দোয়া", arabic: "اللَّهُمَّ إِنَّكَ عَفُوٌّ تُحِبُّ الْعَفْوَ فَاعْفُ عَنِّي", pron: "উচ্চারণ: আল্লাহুম্মা ইন্নাকা আফুউউন তুহিব্বুল আফওয়া ফাফু আন্নী।", meaning: "অর্থ: হে আল্লাহ! আপনি ক্ষমাশীল এবং ক্ষমা করতে ভালোবাসেন; তাই আমাকে ক্ষমা করে দিন।" },
+        { title: "তারাবিহ নামাজের দোয়া", arabic: "سُبْحانَ ذِي الْمُلْكِ وَالْمَلَكُوتِ سُبْحانَ ذِي الْعِزَّةِ وَالْعَظَمَةِ وَالْهَيْبَةِ وَالْقُدْرَةِ وَالْكِبْرِيَاءِ وَالْجَبَرُوتِ سُبْحانَ الْمَلِكِ الْحَيِّ الَّذِي لَا يَنَامُ وَلَا يَمُوتُ سُبُّوحٌ قُدُّوسٌ رَبُّنَا وَرَبُّ الْمَلَائِكَةِ وَالرُّوحِ", pron: "উচ্চারণ: সুবহানা যিল মুলকি ওয়াল মালাকূতি...", meaning: "অর্থ: আল্লাহ পবিত্র, যিনি এই দৃশ্যমান ও অদৃশ্য জগতের মালিক এবং চিরঞ্জীব।" },
+        { title: "কারো বাড়িতে ইফতার করলে দোয়া", arabic: "أَفْطَرَ عِنْدَكُمُ الصَّائِمُونَ ، وَأَكَلَ طَعَامَكُمُ الأَبْرَارُ ، وَصَلَّتْ عَلَيْكُمُ الْمَلائِكَةُ", pron: "উচ্চারণ: আফতারা ইনদাকুমুস সায়িমুনা...", meaning: "অর্থ: তোমাদের এখানে রোজাদাররা ইফতার করুক এবং ফেরেশতারা তোমাদের জন্য রহমতের দোয়া করুক।" },
+        { title: "ইফতারের সময় ইস্তিগফার", arabic: "أَسْتَغْفِرُ اللهَ الَّذِي لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ", pron: "উচ্চারণ: আস্তাগফিরুল্লাহাল্লাযী লা ইলাহা ইল্লা হুয়াল হাইয়্যুল কাইয়্যুমু...", meaning: "অর্থ: আমি আল্লাহর কাছে ক্ষমা চাচ্ছি, যিনি ছাড়া কোনো ইলাহ নেই।" },
+        { title: "তারাবিহ নামাজের মোনাজাত", arabic: "اللهم إنا نسألك الجنة ونعوذ بك من النار", pron: "উচ্চারণ: আল্লাহুম্মা ইন্না নাসআলুকাল জান্নাতা ওয়া নাউযুবিকা মিনান নার।", meaning: "অর্থ: হে আল্লাহ! আমরা আপনার কাছে জান্নাত চাই এবং জাহান্নামের আগুন থেকে মুক্তি চাই।" }
+    ];
+
+    const sehriTimes = ["05:10 AM","05:09 AM","05:08 AM","05:07 AM","05:07 AM","05:06 AM","05:05 AM","05:04 AM","05:03 AM","05:03 AM","05:02 AM","05:01 AM","05:01 AM","05:00 AM","04:59 AM","04:58 AM","04:57 AM","04:56 AM","04:55 AM","04:54 AM","04:53 AM","04:52 AM","04:51 AM","04:50 AM","04:49 AM","04:48 AM","04:47 AM","04:46 AM","04:45 AM","04:44 AM"];
+    const iftarTimes = ["05:57 PM","05:58 PM","05:59 PM","05:59 PM","06:00 PM","06:00 PM","06:01 PM","06:01 PM","06:02 PM","06:02 PM","06:03 PM","06:03 PM","06:04 PM","06:04 PM","06:04 PM","06:05 PM","06:05 PM","06:06 PM","06:06 PM","06:07 PM","06:07 PM","06:08 PM","06:08 PM","06:09 PM","06:09 PM","06:10 PM","06:10 PM","06:10 PM","06:11 PM","06:11 PM"];
+
+    const fajarTimes = ["05:10 AM", "05:09 AM", "05:09 AM", "05:08 AM", "05:07 AM", "05:06 AM", "05:06 AM", "05:05 AM", "05:04 AM", "05:03 AM", "05:02 AM", "05:01 AM", "05:00 AM", "04:59 AM", "04:58 AM", "04:57 AM", "04:56 AM", "04:55 AM", "04:54 AM", "04:53 AM", "04:52 AM", "04:51 AM", "04:50 AM", "04:49 AM", "04:48 AM", "04:47 AM", "04:46 AM", "04:45 AM", "04:44 AM", "04:43 AM"];
+    const johorTimes = ["12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM", "12:11 PM"];
+    const asrTimes = ["04:17 PM", "04:18 PM", "04:19 PM", "04:20 PM", "04:21 PM", "04:22 PM", "04:23 PM", "04:24 PM", "04:25 PM", "04:26 PM", "04:27 PM", "04:28 PM", "04:29 PM", "04:30 PM", "04:31 PM", "04:32 PM", "04:33 PM", "04:34 PM", "04:35 PM", "04:36 PM", "04:37 PM", "04:38 PM", "04:39 PM", "04:40 PM", "04:41 PM", "04:42 PM", "04:43 PM", "04:44 PM", "04:45 PM", "04:46 PM"];
+    const maghribTimes = ["05:57 PM","05:58 PM","05:59 PM","05:59 PM","06:00 PM","06:00 PM","06:01 PM","06:01 PM","06:02 PM","06:02 PM",
+  "06:03 PM","06:03 PM","06:04 PM","06:04 PM","06:04 PM","06:05 PM","06:05 PM","06:06 PM","06:06 PM","06:07 PM",
+  "06:07 PM","06:08 PM","06:08 PM","06:09 PM","06:09 PM","06:10 PM","06:10 PM","06:10 PM","06:11 PM","06:11 PM"];
+    const ishaTimes = ["07:10 PM", "07:11 PM", "07:12 PM", "07:12 PM", "07:13 PM", "07:14 PM", "07:15 PM", "07:16 PM", "07:17 PM", "07:18 PM", "07:19 PM", "07:20 PM", "07:21 PM", "07:22 PM", "07:23 PM", "07:24 PM", "07:25 PM", "07:26 PM", "07:27 PM", "07:28 PM", "07:29 PM", "07:30 PM", "07:31 PM", "07:32 PM", "07:33 PM", "07:34 PM", "07:35 PM", "07:36 PM", "07:37 PM", "07:38 PM"];
+
+    let audioEnabled = false;
+    let playedAzans = new Set(); 
+
+    function unlockAudio() {
+        if (audioEnabled) return; 
+
+        const azan = document.getElementById('azan-audio');
+        azan.muted = true; 
+        
+        let playPromise = azan.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                azan.pause();
+                azan.currentTime = 0;
+                azan.muted = false; 
+                audioEnabled = true;
+                
+                document.removeEventListener('click', unlockAudio);
+                document.removeEventListener('touchstart', unlockAudio);
+            }).catch(e => console.log("Waiting for interaction"));
+        }
+    }
+
+    document.addEventListener('click', unlockAudio);
+    document.addEventListener('touchstart', unlockAudio);
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+        document.getElementById(pageId).classList.add('active-page');
+        window.scrollTo(0,0);
+    }
+
+    const listCont = document.getElementById('dua-list-container');
+    duaData.forEach(dua => {
+        const div = document.createElement('div');
+        div.className = 'dua-card';
+        div.innerText = "⭐ " + dua.title;
+        div.onclick = () => {
+            document.getElementById('detail-title').innerText = dua.title;
+            document.getElementById('det-arabic').innerText = dua.arabic;
+            document.getElementById('det-pron').innerText = dua.pron;
+            document.getElementById('det-meaning').innerText = dua.meaning;
+            showPage('dua-detail-page');
+        };
+        listCont.appendChild(div);
+    });
+
+    let count = 0;
+    function tasbihClick() {
+        count++;
+        document.getElementById('tasbih-count').innerText = count;
+        if (navigator.vibrate) navigator.vibrate(60);
+    }
+    function resetTasbih() { count = 0; document.getElementById('tasbih-count').innerText = count; }
+
+    function parseTime(timeStr, baseDate) {
+        let [time, period] = timeStr.split(" ");
+        let [hour, min] = time.split(":").map(Number);
+        if (period === "PM" && hour !== 12) hour += 12;
+        if (period === "AM" && hour === 12) hour = 0;
+        let d = new Date(baseDate);
+        d.setHours(hour, min, 0, 0);
+        return d;
+    }
+
+    function updateApp() {
+        const now = new Date();
+        const ramadanStart = new Date("2026-02-19T00:00:00");
+        let ramadanDay = Math.floor((now - ramadanStart) / (1000 * 60 * 60 * 24)) + 1;
+        let currentIdx = Math.max(0, Math.min(ramadanDay - 1, 29));
+
+        document.getElementById('current-date').innerText = now.toDateString();
+
+        const prayers = ['fajar', 'johor', 'asr', 'maghrib', 'isha'];
+        const prayerNamesBangla = ['ফজর', 'যোহর', 'আসর', 'মাগরিব', 'এশা', 'ফজর'];
+        let pDates = [];
+
+        prayers.forEach(p => {
+            let timeStr;
+            if (p === 'fajar') timeStr = fajarTimes[currentIdx];
+            else if (p === 'johor') timeStr = johorTimes[currentIdx];
+            else if (p === 'asr') timeStr = asrTimes[currentIdx];
+            else if (p === 'maghrib') timeStr = maghribTimes[currentIdx];
+            else if (p === 'isha') timeStr = ishaTimes[currentIdx];
+            
+            document.getElementById(`t-${p}`).innerText = timeStr;
+            pDates.push(parseTime(timeStr, now));
+        });
+
+        // 1 Hour Active Logic & Countdown Line Calculation
+        let activeIndex = -1;
+        let tomorrow = new Date(now); tomorrow.setDate(now.getDate() + 1);
+        let nextFajrIdx = Math.min(currentIdx + 1, 29);
+        let nextDayFajr = parseTime(fajarTimes[nextFajrIdx], tomorrow);
+        let allPDates = [...pDates, nextDayFajr];
+
+        let prevPrayerTime = null;
+        let nextPrayerTimeForBar = null;
+        let nextPrayerLabel = "";
+
+        for (let i = 0; i < 5; i++) {
+            let pTime = allPDates[i];
+            let oneHourLater = new Date(pTime.getTime() + 60 * 60 * 1000); // 1 hour
+
+            if (now >= pTime && now < oneHourLater) {
+                // ১ ঘণ্টার মধ্যে থাকলে ওই ওয়াক্তটাই Active থাকবে
+                activeIndex = i;
+                prevPrayerTime = pTime; 
+                nextPrayerTimeForBar = allPDates[i + 1];
+                nextPrayerLabel = prayerNamesBangla[i + 1];
+                break;
+            } else if (now >= oneHourLater && now < allPDates[i + 1]) {
+                // ১ ঘণ্টা পার হলে পরবর্তী ওয়াক্ত Active হয়ে যাবে
+                activeIndex = (i + 1) % 5;
+                prevPrayerTime = pTime; 
+                nextPrayerTimeForBar = allPDates[i + 1];
+                nextPrayerLabel = prayerNamesBangla[i + 1];
+                break;
+            }
+        }
+
+        // রাত ১২টার পর থেকে ফজরের আগ পর্যন্ত লজিক
+        if (now < allPDates[0]) {
+            activeIndex = 0;
+            nextPrayerTimeForBar = allPDates[0];
+            let yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+            prevPrayerTime = parseTime(ishaTimes[Math.max(0, currentIdx - 1)], yesterday);
+            nextPrayerLabel = prayerNamesBangla[0];
+        }
+
+        // Apply Active Class
+        prayers.forEach((p, idx) => {
+            let item = document.getElementById(`p-${p}`);
+            if (idx === activeIndex) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+
+            // Play Azan Check
+            let pDate = pDates[idx];
+            if (now.getHours() === pDate.getHours() && now.getMinutes() === pDate.getMinutes()) {
+                let azanKey = p + "_" + currentIdx;
+                if (!playedAzans.has(azanKey) && audioEnabled) {
+                    const azan = document.getElementById('azan-audio');
+                    azan.muted = false; 
+                    azan.play();
+                    playedAzans.add(azanKey);
+                }
+            }
+        });
+
+        // Update Progress Line
+        if (nextPrayerTimeForBar && prevPrayerTime) {
+            let totalDiff = nextPrayerTimeForBar - prevPrayerTime;
+            let elapsed = now - prevPrayerTime;
+            let percent = (elapsed / totalDiff) * 100;
+            if (percent < 0) percent = 0;
+            if (percent > 100) percent = 100;
+            
+            document.getElementById('prayer-progress-fill').style.width = percent + "%";
+            
+            let timeDiff = nextPrayerTimeForBar - now;
+            let barH = Math.floor(timeDiff / 3600000);
+            let barM = Math.floor((timeDiff % 3600000) / 60000);
+            let barS = Math.floor((timeDiff % 60000) / 1000);
+            
+            document.getElementById('next-prayer-text').innerText = `পরবর্তী ওয়াক্ত: ${nextPrayerLabel} - ${String(barH).padStart(2,'0')}:${String(barM).padStart(2,'0')}:${String(barS).padStart(2,'0')}`;
+        }
+
+
+        // Main Sehri/Iftar Countdown Logic
+        let sehriToday = parseTime(sehriTimes[currentIdx], now);
+        let iftarToday = parseTime(iftarTimes[currentIdx], now);
+        let targetDate, status;
+        let displayIdx = currentIdx; 
+
+        if (now < ramadanStart) {
+            status = "⏳ রমজান শুরু হতে বাকি:";
+            targetDate = ramadanStart;
+        } else if (ramadanDay > 30) {
+            status = "🌙 রমজান শেষ, ঈদ মোবারক!";
+            targetDate = now; 
+        } else if (now > iftarToday) {
+            status = "⏳ আগামী সেহরির বাকি:";
+            let tmrw = new Date(now);
+            tmrw.setDate(now.getDate() + 1);
+            targetDate = parseTime(sehriTimes[Math.min(currentIdx + 1, 29)], tmrw);
+            displayIdx = Math.min(currentIdx + 1, 29); 
+        } else if (now < sehriToday) {
+            status = "⏳ সেহরির বাকি:";
+            targetDate = sehriToday;
+        } else {
+            status = "⏳ ইফতারের বাকি:";
+            targetDate = iftarToday;
+        }
+
+        let tDiff = targetDate - now;
+        if(tDiff < 0) tDiff = 0;
+        
+        let d = Math.floor(tDiff / (1000 * 60 * 60 * 24));
+        let h = Math.floor((tDiff % (1000 * 60 * 60 * 24)) / 3600000);
+        let m = Math.floor((tDiff % 3600000) / 60000);
+        let s = Math.floor((tDiff % 60000) / 1000);
+        
+        const timerBox = document.getElementById('timer-container');
+        if (tDiff > 0 && tDiff <= 300000 && d === 0) timerBox.classList.add('warning-blink');
+        else timerBox.classList.remove('warning-blink');
+
+        if (d > 0) {
+            document.getElementById('timer').innerText = `${d} দিন ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            document.getElementById('timer').style.fontSize = "22px"; 
+        } else {
+            document.getElementById('timer').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+            document.getElementById('timer').style.fontSize = "32px";
+        }
+
+        document.getElementById('status-text').innerText = status;
+        document.getElementById('sehri-time').innerText = "🌙 সেহরি শেষ: " + sehriTimes[displayIdx];
+        document.getElementById('iftar-time').innerText = "🕌 ইফতার শুরু: " + iftarTimes[displayIdx];
+
+        let phaseTxt = (ramadanDay <= 10) ? "🌿 রহমতের ১০ দিন" : (ramadanDay <= 20) ? "🌙 মাহফিরাতের ১০ দিন" : "⭐ নাজাতের ১০ দিন";
+        if (now < ramadanStart || ramadanDay > 30) phaseTxt = "✨ রমজানুল মোবারক ✨";
+        document.getElementById('phase').innerText = phaseTxt;
+        
+        let calHtml = "";
+        for (let i = 1; i <= 30; i++) {
+            let cls = "day-box" + (i === ramadanDay && now >= ramadanStart && ramadanDay <= 30 ? " current-day" : i < ramadanDay ? " past-day" : "");
+            calHtml += `<div class="${cls}">${i}</div>`;
+        }
+        document.getElementById('calendar').innerHTML = calHtml;
+        document.getElementById('jummah-msg').style.display = (now.getDay() === 5) ? "block" : "none";
+    }
+
+    setInterval(updateApp, 1000);
+    updateApp();
+</script>
+
+</body></html>
